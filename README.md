@@ -4,10 +4,34 @@ bmVAE is a variational autoencoder method for clustering single-cell mutation da
 
 ## Requirements
 
-* Python 3.7+.
-* torch 1.11.0+.
-* numpy.
-* sklearn.
+* Python 3.8+.
+
+# Installation
+## Clone repository
+First, download bmVAE from github and change to the directory:
+```bash
+git clone https://github.com/zhyu-lab/bmvae
+cd bmvae
+```
+
+## Create conda environment (optional)
+Create a new environment named "bmvae":
+```bash
+conda create --name bmvae python=3.8.13
+```
+
+Then activate it:
+```bash
+conda activate bmvae
+```
+
+## Install requirements
+Use pip to install the requirements:
+```bash
+python -m pip install -r requirements.txt
+```
+
+Now you are ready to run **bmVAE**!
 
 ## Usage
 

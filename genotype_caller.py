@@ -3,6 +3,18 @@ import numpy as np
 
 class GenotypeCaller:
     def __init__(self, label, data):
+        """
+        self.T: Number of iterations to update genotype matrix, false positive rate and false positive rate
+        self.data: Single cell mutation data
+        self.label: inferred cell labels
+        self.K：Number of clusters
+        self.genotype_post_prob：Posterior probs of genotypes
+        self.alpha: False positive rate
+        self.beta: False negative rate
+        self.min_alpha,self.min_beta: lower limit for false positive rate and false negative rate
+        self.limit: a parameter to control the number of iterations for training
+        """
+
         self.T = 500
         self.data = data
         self.label = label
@@ -24,6 +36,10 @@ class GenotypeCaller:
             self.update_post_prob()
             self.update_alpha_beta()
 
+            """
+            training terminates if the mean absolute distance between the posteriors at two consecutive iterations
+            is less than a predefined threshold
+            """
             if t > 0:
                 dist = 0
                 for k in range(self.K):
@@ -37,6 +53,9 @@ class GenotypeCaller:
         return self.genotypes, self.alpha, self.beta
 
     def update_post_prob(self):
+        """
+        Update posterior probs of genotypes
+        """
         # N, M = self.data.shape
         for k in range(self.K):
             tv_k = self.label == k
@@ -56,8 +75,10 @@ class GenotypeCaller:
             self.genotypes[k, tv] = 1
             self.genotypes[k, np.logical_not(tv)] = 0
 
-
     def update_alpha_beta(self):
+        """
+        Update false negative rate and false positive rate
+        """
         g = self.genotypes[self.label, ]
         tv = np.logical_or(self.data == 0, self.data == 1)
         tmp1 = np.sum((1-g[tv])*self.data[tv])

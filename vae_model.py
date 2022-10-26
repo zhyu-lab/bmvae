@@ -19,6 +19,7 @@ def initialize_weights(net):
             m.bias.data.zero_()
 
 
+# Define loss function
 def kl_loss(z_mean, z_stddev):
     return torch.mean(-0.5 * torch.sum(1 + 2*torch.log(z_stddev) - z_mean ** 2 - z_stddev ** 2, dim=1), dim=0)
 
@@ -38,6 +39,9 @@ def xs_gen(cell_list, batch_size, random):
 
 
 class Encoder(torch.nn.Module):
+    """
+    This class implements Encoder of the VAE model
+    """
     def __init__(self, d_in, h1, h2, d_out):
         super(Encoder, self).__init__()
         self.enc_layer1 = nn.Sequential(
@@ -56,13 +60,15 @@ class Encoder(torch.nn.Module):
 
         initialize_weights(self)
 
-
     def forward(self, x):
         x = self.enc_layer1(x)
         return self.enc_layer2(x)
 
 
 class Decoder(torch.nn.Module):
+    """
+    This class implements Decoder of the VAE model
+    """
     def __init__(self, d_in, h1, h2, d_out):
         super(Decoder, self).__init__()
         self.dec_layer1 = nn.Sequential(
@@ -78,7 +84,6 @@ class Decoder(torch.nn.Module):
         self.dec_layer3 = nn.Linear(h2, d_out)
         initialize_weights(self)
 
-
     def forward(self, x):
         x = self.dec_layer1(x)
         x = self.dec_layer2(x)
@@ -86,12 +91,14 @@ class Decoder(torch.nn.Module):
 
 
 class VAE(torch.nn.Module):
+    """
+    This class implements the VAE model
+    """
 
     def __init__(self, encoder, decoder, dimension):
         super(VAE, self).__init__()
         self.encoder = encoder
         self.decoder = decoder
-
 
     def _sample_latent(self, h_enc):
         """
@@ -103,13 +110,11 @@ class VAE(torch.nn.Module):
         log_sigma = log_sigma.cuda()
         sigma = torch.exp(log_sigma)
 
-
         self.z_mean = mu
         self.z_sigma = sigma
 
         eps = torch.randn_like(sigma)
         return mu + eps * sigma
-
 
     def forward(self, state):
         h_enc = self.encoder(state)

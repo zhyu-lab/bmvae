@@ -6,12 +6,16 @@ import operator
 
 class G_Cluster():
     def __init__(self, data, Kmax):
+        """
+        self.X : data to cluster
+        self.x,self.y,self.z：first three dimensions of self.X；
+        self.Kmax：the maximum number of clusters to consider
+        """
         self.X = data
         self.x = self.X[:, 0]
         self.y = self.X[:, 1]
         self.z = self.X[:, 2]
         self.Kmax = Kmax
-
 
     def cluster(self):
         n_components_range = np.arange(1, self.Kmax+1)
@@ -19,6 +23,8 @@ class G_Cluster():
         min_bic = []
         n_components = 1
         count = 0
+
+        # Gaussian mixture model is used for clustering, and BIC is used to select the optimal number of clusters
         while n_components <= self.Kmax:
             gmm = GaussianMixture(n_components=n_components, covariance_type='full', n_init=50)
             gmm.fit(self.X)
@@ -45,8 +51,9 @@ class G_Cluster():
         probs = gmm.predict_proba(self.X)
         labels = gmm.predict(self.X)
 
-        plt.figure("3D Scatter", facecolor="lightgray")
-        ax3d = plt.gca(projection="3d")  
+        # visualize clustering results
+        fig = plt.figure("3D Scatter", facecolor="lightgray")
+        ax3d = fig.add_subplot(projection="3d")
         plt.title('3D Scatter', fontsize=20)
         ax3d.set_xlabel('x', fontsize=14)
         ax3d.set_ylabel('y', fontsize=14)
